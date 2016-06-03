@@ -3,9 +3,12 @@
 	var Carousel = function(poster){
 
 		this.poster = poster;
-		this.posterItemMain = poster.find("ul.poster-list");
+		this.posterItemMain = poster.find("ui.poster-list");
 		this.nextBtn = poster.find("div.poster-next-btn");
 		this.prevBtn = poster.find("div.poster-prev-btn");
+		this.posterItems = poster.find("li.poster-item");
+
+		this.posterFirstItem = this.posterItems.first();
 
 		this.setting = {
 			"width":410,
@@ -16,14 +19,49 @@
 			"autoPlay":true,
 			"delay":2000,
 			"speed":300
-		}
+		};
 
 		$.extend(this.setting, this.getSetting());
 		this.setSettingValue();
+		this.setPosterPos();
 		console.log(this.setting);
-	}
+	};
 
 	Carousel.prototype={
+
+		setPosterPos:function(){
+			var self = this;
+			var sliceItems = this.posterItems.slice(1),
+			sliceSize = sliceItems.size()/2,
+			rightSlice = sliceItems.slice(0, sliceSize),
+			level = Math.floor(this.posterItems.size()/2),
+			leftSlice = sliceItems.slice(sliceSize);
+
+			var rw = this.setting.posterWidth,
+			rh = this.setting.posterHeight,
+			gap = (this.setting.width - this.setting.posterWidth)/2/level;
+
+			var firstLeft = ((this.setting.width - this.setting.posterWidth)/2);
+			var fixOffsetLeft = firstLeft + rw;
+
+			rightSlice.each(function(i){
+				rw = rw*self.setting.scale;
+				rh = rh*self.setting.scale;
+				level --;
+				$(this).css({
+					width:rw,
+					height:rh,
+					top:(self.setting.height - rh)/2,
+					left:fixOffsetLeft +(++i)*gap-rw,
+					opacity:0.8/i,
+					zIndex:level
+				})
+			});
+
+			leftSlice.each(function(){
+
+			})
+		},
 
 		setSettingValue:function(){
 			this.poster.css({
@@ -37,14 +75,20 @@
 			var w = (this.setting.width - this.setting.posterWidth)/2;
 
 			this.prevBtn.css({
-				width = w,
-				height = this.setting.height
+				width:w,
+				height:this.setting.height
 			});
 			this.nextBtn.css({
-				width = w,
-				height = this.setting.width
+				width:w,
+				height:this.setting.height
 			});
-
+			this.posterFirstItem.css({
+				width:this.setting.posterWidth,
+				height:this.setting.posterHeight,
+				left:w,
+				top:0,
+				zIndex:Math.floor(this.posterItems.size()/2)
+			});
 		},
 
 		getSetting:function(){
@@ -55,7 +99,7 @@
 				return {};
 			}
 		}
-	}
+	};
 
 	Carousel.init = function(posters){
 		var _this_ = this;
