@@ -1,15 +1,8 @@
 (function($){
 
 	var Carousel = function(poster){
-<<<<<<< HEAD
-		alert(poster);
-	}
 
-	Carousel.prototype={
-
-	}
-=======
-
+		var self = this;
 		this.poster = poster;
 		this.posterItemMain = poster.find("ui.poster-list");
 		this.nextBtn = poster.find("div.poster-next-btn");
@@ -17,6 +10,7 @@
 		this.posterItems = poster.find("li.poster-item");
 
 		this.posterFirstItem = this.posterItems.first();
+		this.posterLastItem = this.posterItems.last();
 
 		this.setting = {
 			"width":410,
@@ -32,10 +26,61 @@
 		$.extend(this.setting, this.getSetting());
 		this.setSettingValue();
 		this.setPosterPos();
+		this.nextBtn.click(function(){
+			self.carouselRotate("left");
+		});
+		this.prevBtn.click(function(){
+			self.carouselRotate("right");
+		});
 		console.log(this.setting);
 	};
 
 	Carousel.prototype={
+
+		carouselRotate:function(way){
+			var _this_ = this;
+			if(way === "left"){
+				this.posterItems.each(function(){
+					var self = $(this),
+						prev = self.prev().get(0)?self.prev():_this_.posterLastItem,
+						width = prev.width(),
+						height = prev.height(),
+						zIndex = prev.css("zIndex"),
+						opacity = prev.css("opacity"),
+						left = prev.css("left"),
+						top = prev.css("top");
+
+						self.animate({
+							width:width,
+							height:height,
+							zIndex:zIndex,
+							opacity:opacity,
+							left:left,
+							top:top
+						});
+				});
+			}else if(way === "right"){
+				this.posterItems.each(function(){
+					var self = $(this),
+						next = self.next().get(0)?self.next():_this_.posterFirstItem,
+						width = next.width(),
+						height = next.height(),
+						zIndex = next.css("zIndex"),
+						opacity = next.css("opacity"),
+						left = next.css("left"),
+						top = next.css("top");
+
+						self.animate({
+							width:width,
+							height:height,
+							zIndex:zIndex,
+							opacity:opacity,
+							left:left,
+							top:top
+						});
+				});
+			}
+		},
 
 		setPosterPos:function(){
 			var self = this;
@@ -66,8 +111,21 @@
 				})
 			});
 
-			leftSlice.each(function(){
-
+			lw = rightSlice.last().width(),
+				lh = rightSlice.last().height(),
+				oloop = sliceSize;
+			leftSlice.each(function(i){
+				$(this).css({
+					width:lw,
+					height:lh,
+					left:i*gap,
+					top:(self.setting.height-lh)/2,
+					zIndex:i,
+					opacity:0.8/oloop
+				});
+				lw = lw/self.setting.scale;
+				lh = lh/self.setting.scale;
+				oloop --;
 			})
 		},
 
@@ -108,7 +166,6 @@
 			}
 		}
 	};
->>>>>>> origin/master
 
 	Carousel.init = function(posters){
 		var _this_ = this;
