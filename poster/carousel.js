@@ -20,7 +20,8 @@
 			"scale":0.8,
 			"autoPlay":true,
 			"delay":2000,
-			"speed":300
+			"speed":300,
+			"verticalAlign":"middle"
 		};
 
 		$.extend(this.setting, this.getSetting());
@@ -79,6 +80,9 @@
 							top:top
 						});
 				});
+
+
+
 			}
 		},
 
@@ -107,7 +111,8 @@
 					top:(self.setting.height - rh)/2,
 					left:fixOffsetLeft +(++i)*gap-rw,
 					opacity:0.8/i,
-					zIndex:level
+					zIndex:level,
+					top:self.setAlign(rh)
 				})
 			});
 
@@ -121,7 +126,8 @@
 					left:i*gap,
 					top:(self.setting.height-lh)/2,
 					zIndex:i,
-					opacity:0.8/oloop
+					opacity:0.8/oloop,
+					top:self.setAlign(lh)
 				});
 				lw = lw/self.setting.scale;
 				lh = lh/self.setting.scale;
@@ -155,6 +161,19 @@
 				top:0,
 				zIndex:Math.floor(this.posterItems.size()/2)
 			});
+		},
+
+		setAlign:function(height){
+			var verticalType = this.setting.verticalAlign,
+			top = 0;
+			if(verticalType === "top"){
+				top = 0;
+			}else if(verticalType === "bottom"){
+				top = (this.setting.height - height);
+			}else{
+				top = (this.setting.height - height)/2;
+			}
+			return top;
 		},
 
 		getSetting:function(){
