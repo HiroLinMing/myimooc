@@ -32,6 +32,7 @@
 		this.prevBtn.click(function(){
 			self.carouselRotate("right");
 		});
+		
 		console.log(this.setting);
 	};
 
