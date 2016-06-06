@@ -3,6 +3,7 @@
 	var Carousel = function(poster){
 
 		var self = this;
+		this.clickFlag = true;
 		this.poster = poster;
 		this.posterItemMain = poster.find("ui.poster-list");
 		this.nextBtn = poster.find("div.poster-next-btn");
@@ -20,23 +21,58 @@
 			"scale":0.8,
 			"autoPlay":true,
 			"delay":2000,
-			"speed":300
+			"speed":300,
+			"align":"top"
 		};
 
 		$.extend(this.setting, this.getSetting());
 		this.setSettingValue();
 		this.setPosterPos();
 		this.nextBtn.click(function(){
-			self.carouselRotate("left");
+			if(self.clickFlag){
+				self.clickFlag = false;
+				self.carouselRotate("left");
+			}
 		});
 		this.prevBtn.click(function(){
-			self.carouselRotate("right");
+			if(self.clickFlag){
+				self.clickFlag = false;
+				self.carouselRotate("right");
+			}
 		});
+
+		if(this.setting.autoPlay){
+			this.autoPlay();
+			this.poster.hover(function(){
+				window.clearInterval(self.timer);
+			},function(){
+				self.autoPlay();
+			})
+		};
 		
 		console.log(this.setting);
 	};
 
 	Carousel.prototype={
+
+		autoPlay:function(){
+			var self = this;
+			this.timer = window.setInterval(function(){
+				self.nextBtn.click();
+			}, this.setting.delay);
+		},
+
+		align:function(height){
+			var top;
+			if(this.setting.align === "top"){
+				top = 0;
+			}else if(this.setting.align === "bottom"){
+				top = (this.setting.height - height);
+			}else{
+				top = (this.setting.height - height)/2;
+			}
+			return top;
+		},
 
 		carouselRotate:function(way){
 			var _this_ = this;
@@ -58,6 +94,8 @@
 							opacity:opacity,
 							left:left,
 							top:top
+						},_this_.setting.speed, function(){
+							_this_.clickFlag = true;
 						});
 				});
 			}else if(way === "right"){
@@ -78,6 +116,8 @@
 							opacity:opacity,
 							left:left,
 							top:top
+						},_this_.setting.speed,function(){
+							_this_.clickFlag = true;
 						});
 				});
 			}
@@ -105,7 +145,7 @@
 				$(this).css({
 					width:rw,
 					height:rh,
-					top:(self.setting.height - rh)/2,
+					top:self.align(rh),
 					left:fixOffsetLeft +(++i)*gap-rw,
 					opacity:0.8/i,
 					zIndex:level
@@ -120,7 +160,7 @@
 					width:lw,
 					height:lh,
 					left:i*gap,
-					top:(self.setting.height-lh)/2,
+					top:self.align(lh),
 					zIndex:i,
 					opacity:0.8/oloop
 				});
